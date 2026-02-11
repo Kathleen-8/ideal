@@ -213,7 +213,7 @@
           <button data-fx="fx_grade">Color Grade</button>
         </div>
         <div class="hint">
-          Механика из примеров: эффект “выключен”, когда у него <code>blend-mode="skip"</code>. :contentReference[oaicite:1]{index=1}
+          Механика из примеров: эффект “выключен”, когда у него <code>blend-mode="skip"</code>.
         </div>
       </div>
 
@@ -253,7 +253,6 @@
       if (!fxEl) return;
       if (enabled) fxEl.removeAttribute('blend-mode'); // default (включено)
       else fxEl.setAttribute('blend-mode', 'skip');    // выключено
-      // Иногда полезно "подтолкнуть" перерендер
       if (composer?.queueRender) composer.queueRender();
     }
 
@@ -269,7 +268,6 @@
       ['fx_smaa','fx_bloom','fx_ssao','fx_outline','fx_glitch','fx_pixel','fx_grade']
         .forEach(id => setFxEnabled(document.getElementById(id), false));
 
-      // обновим подсветку кнопок
       document.querySelectorAll('button[data-fx]').forEach(b => b.classList.remove('on'));
       refreshStatus();
     }
@@ -321,7 +319,6 @@
         return;
       }
 
-      // Кнопки на каждую анимацию
       anims.forEach(name => {
         const btn = document.createElement('button');
         btn.textContent = name;
@@ -336,7 +333,6 @@
       });
     }
 
-    // Play/Pause
     btnPlayPause.addEventListener('click', () => {
       if (mv.paused) {
         mv.play();
@@ -348,7 +344,6 @@
       refreshStatus();
     });
 
-    // Stop (в начало)
     btnStop.addEventListener('click', () => {
       mv.pause();
       mv.currentTime = 0;
@@ -356,12 +351,10 @@
       refreshStatus();
     });
 
-    // Тогглы эффектов
     document.querySelectorAll('button[data-fx]').forEach(btn => {
       btn.addEventListener('click', () => toggleFxById(btn.dataset.fx, btn));
     });
 
-    // Пресеты
     document.getElementById('presetOff').addEventListener('click', () => setAllFxOff());
 
     document.getElementById('presetClean').addEventListener('click', () => {
@@ -397,14 +390,12 @@
       refreshStatus();
     });
 
-    // Когда модель загрузилась — читаем анимации, строим кнопки
     mv.addEventListener('load', () => {
       buildAnimationButtons();
       refreshFxButtonsUI();
       refreshStatus();
     });
 
-    // На всякий случай, если load не сработал мгновенно
     setStatus('Статус: откройте страницу, дождитесь загрузки модели…');
   </script>
 </body>
