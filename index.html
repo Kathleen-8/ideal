@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lab: model-viewer + postprocessing</title>
+  <title>Lab: model-viewer + robot model</title>
 
   <!-- Polyfill для importmap (нужно, т.к. Safari без него не умеет import maps) -->
   <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
@@ -119,16 +119,16 @@
 
 <body>
   <header>
-    <h1>model-viewer: Модель без анимаций + Post-Processing эффекты</h1>
-    <p>Здесь отображается модель без анимаций, и вы можете включать эффекты post-processing.</p>
+    <h1>model-viewer: Модель робота</h1>
+    <p>Отображение модели робота без анимаций, с возможностью включать эффекты post-processing.</p>
   </header>
 
   <div class="wrap">
     <!-- VIEWER -->
     <model-viewer
       id="mv"
-      src="sneg.glb" <!-- Путь к вашей модели -->
-      alt="3D модель"
+      src="robot.glb" <!-- Убедитесь, что файл robot.glb находится в той же папке, что и index.html -->
+      alt="3D модель робота"
       camera-controls
       autoplay="false"
       exposure="1.0"
