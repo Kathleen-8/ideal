@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Lab: model-viewer + postprocessing</title>
 
-  <!-- 1) Polyfill для importmap (нужно, т.к. Safari без него не умеет import maps) -->
+  <!-- Polyfill для importmap (нужно, т.к. Safari без него не умеет import maps) -->
   <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
 
-  <!-- 2) Import map для Three.js (чтобы не было конфликтов пакетов) -->
+  <!-- Import map для Three.js (чтобы не было конфликтов пакетов) -->
   <script type="importmap">
     {
       "imports": {
@@ -17,7 +17,7 @@
     }
   </script>
 
-  <!-- 3) model-viewer (module-версия, без запакованного three) + addon model-viewer-effects -->
+  <!-- model-viewer (module-версия, без запакованного three) + addon model-viewer-effects -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer-module.min.js"></script>
   <script type="module" src="https://unpkg.com/@google/model-viewer-effects/dist/model-viewer-effects.min.js"></script>
 
@@ -119,19 +119,18 @@
 
 <body>
   <header>
-    <h1>model-viewer: анимации + Post-Processing эффекты</h1>
-    <p>Кнопки анимаций создаются автоматически из вашего .glb. Эффекты включаются/выключаются blend-mode="skip".</p>
+    <h1>model-viewer: Модель без анимаций + Post-Processing эффекты</h1>
+    <p>Здесь отображается модель без анимаций, и вы можете включать эффекты post-processing.</p>
   </header>
 
   <div class="wrap">
     <!-- VIEWER -->
     <model-viewer
       id="mv"
-      src="sneg-a.glb"
-      alt="3D model"
+      src="sneg.glb" <!-- Путь к вашей модели -->
+      alt="3D модель"
       camera-controls
       autoplay="false"
-      animation-name=""
       exposure="1.0"
       shadow-intensity="0.8"
       environment-image="neutral"
@@ -140,7 +139,6 @@
     >
       <!-- PostProcessing pipeline -->
       <effect-composer id="composer" render-mode="performance">
-        <!-- Включаем/выключаем эффекты через blend-mode="skip" -->
         <smaa-effect id="fx_smaa" blend-mode="skip"></smaa-effect>
 
         <bloom-effect
@@ -175,7 +173,6 @@
           granularity="6"
         ></pixelate-effect>
 
-        <!-- Рекомендуют добавлять color-grade в конце пайплайна -->
         <color-grade-effect
           id="fx_grade"
           blend-mode="skip"
@@ -190,19 +187,7 @@
     <!-- CONTROL PANEL -->
     <div class="panel">
       <div class="group">
-        <h2>1) Анимации модели</h2>
-        <div class="row" id="animButtons"></div>
-        <div class="row" style="margin-top:8px;">
-          <button id="btnPlayPause">▶ Play</button>
-          <button id="btnStop">⏹ Stop (в начало)</button>
-        </div>
-        <div class="hint">
-          Если кнопок нет — в вашем .glb может не быть анимаций. Тогда добавьте анимации в Blender/другом редакторе и экспортируйте заново.
-        </div>
-      </div>
-
-      <div class="group">
-        <h2>2) Post-Processing эффекты (вкл/выкл)</h2>
+        <h2>1) Post-Processing эффекты (вкл/выкл)</h2>
         <div class="row">
           <button data-fx="fx_smaa">SMAA</button>
           <button data-fx="fx_bloom">Bloom</button>
@@ -212,13 +197,10 @@
           <button data-fx="fx_pixel">Pixelate</button>
           <button data-fx="fx_grade">Color Grade</button>
         </div>
-        <div class="hint">
-          Механика из примеров: эффект “выключен”, когда у него <code>blend-mode="skip"</code>.
-        </div>
       </div>
 
       <div class="group">
-        <h2>3) Быстрые пресеты (комбинации)</h2>
+        <h2>2) Быстрые пресеты (комбинированные эффекты)</h2>
         <div class="row">
           <button id="presetClean">Clean (SMAA)</button>
           <button id="presetCinematic">Cinematic (Bloom + Grade + SMAA)</button>
@@ -237,8 +219,6 @@
     const composer = document.getElementById('composer');
     const statusEl = document.getElementById('status');
 
-    const animButtonsEl = document.getElementById('animButtons');
-    const btnPlayPause = document.getElementById('btnPlayPause');
     const btnStop = document.getElementById('btnStop');
 
     function setStatus(text) {
@@ -281,22 +261,13 @@
     }
 
     function refreshStatus() {
-      const anims = mv.availableAnimations || [];
-      const currentAnim = mv.animationName || '(не выбрана)';
-      const playing = mv.paused ? 'пауза' : 'играет';
-
       const fxState = (id, label) => {
         const fx = document.getElementById(id);
         return `${label}: ${isFxEnabled(fx) ? 'ON' : 'OFF'}`;
       };
 
       setStatus(
-`Статус:
-- Анимаций в файле: ${anims.length}
-- Текущая анимация: ${currentAnim}
-- Проигрывание: ${playing}
-
-Эффекты:
+`Эффекты:
 - ${fxState('fx_smaa','SMAA')}
 - ${fxState('fx_bloom','Bloom')}
 - ${fxState('fx_ssao','SSAO')}
@@ -306,50 +277,6 @@
 - ${fxState('fx_grade','ColorGrade')}`
       );
     }
-
-    function buildAnimationButtons() {
-      animButtonsEl.innerHTML = '';
-      const anims = mv.availableAnimations || [];
-
-      if (anims.length === 0) {
-        const msg = document.createElement('div');
-        msg.className = 'hint';
-        msg.textContent = 'Анимации не найдены в модели.';
-        animButtonsEl.appendChild(msg);
-        return;
-      }
-
-      anims.forEach(name => {
-        const btn = document.createElement('button');
-        btn.textContent = name;
-        btn.addEventListener('click', () => {
-          mv.animationName = name;
-          mv.currentTime = 0;
-          mv.play();
-          btnPlayPause.textContent = '⏸ Pause';
-          refreshStatus();
-        });
-        animButtonsEl.appendChild(btn);
-      });
-    }
-
-    btnPlayPause.addEventListener('click', () => {
-      if (mv.paused) {
-        mv.play();
-        btnPlayPause.textContent = '⏸ Pause';
-      } else {
-        mv.pause();
-        btnPlayPause.textContent = '▶ Play';
-      }
-      refreshStatus();
-    });
-
-    btnStop.addEventListener('click', () => {
-      mv.pause();
-      mv.currentTime = 0;
-      btnPlayPause.textContent = '▶ Play';
-      refreshStatus();
-    });
 
     document.querySelectorAll('button[data-fx]').forEach(btn => {
       btn.addEventListener('click', () => toggleFxById(btn.dataset.fx, btn));
@@ -391,7 +318,6 @@
     });
 
     mv.addEventListener('load', () => {
-      buildAnimationButtons();
       refreshFxButtonsUI();
       refreshStatus();
     });
