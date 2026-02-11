@@ -3,326 +3,94 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lab: model-viewer + robot model</title>
+  <title>Lab: model-viewer + Robot Model</title>
 
-  <!-- Polyfill для importmap (нужно, т.к. Safari без него не умеет import maps) -->
-  <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
-
-  <!-- Import map для Three.js (чтобы не было конфликтов пакетов) -->
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
-      }
-    }
-  </script>
-
-  <!-- model-viewer (module-версия, без запакованного three) + addon model-viewer-effects -->
+  <!-- Подключение model-viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer-module.min.js"></script>
-  <script type="module" src="https://unpkg.com/@google/model-viewer-effects/dist/model-viewer-effects.min.js"></script>
 
   <style>
-    :root { color-scheme: light; }
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: #f6f7fb;
-      color: #111;
-    }
-    header {
-      padding: 16px 18px;
-      background: white;
-      border-bottom: 1px solid #e7e8ee;
-    }
-    header h1 { margin: 0 0 6px; font-size: 18px; }
-    header p { margin: 0; opacity: .75; font-size: 13px; }
-
-    .wrap {
-      display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 12px;
-      padding: 12px;
-      max-width: 1200px;
-      margin: 0 auto;
+      font-family: Arial, sans-serif;
+      background-color: #f6f7fb;
+      text-align: center;
+      padding: 20px;
     }
 
     model-viewer {
       width: 100%;
-      height: calc(100vh - 120px);
-      min-height: 520px;
+      height: 400px;
       background: #0f1220;
       border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,.08);
     }
 
-    .panel {
-      background: white;
-      border-radius: 14px;
-      padding: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.06);
-      border: 1px solid #ececf3;
-      height: calc(100vh - 120px);
-      min-height: 520px;
-      overflow: auto;
-    }
-
-    .group {
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    .group h2 {
-      margin: 0 0 8px;
-      font-size: 14px;
-    }
-
-    .row { display: flex; flex-wrap: wrap; gap: 8px; }
     button {
-      border: 1px solid #d7d9e3;
-      background: #fff;
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
       border-radius: 10px;
-      padding: 8px 10px;
       cursor: pointer;
-      font-size: 13px;
-    }
-    button:hover { background: #f3f5ff; }
-    button.on {
-      background: #e8eeff;
-      border-color: #b9c7ff;
+      font-size: 16px;
     }
 
-    .hint {
-      font-size: 12px;
-      opacity: .75;
-      margin-top: 6px;
-      line-height: 1.35;
+    button:hover {
+      background-color: #45a049;
     }
 
     .status {
-      font-size: 12px;
-      padding: 8px 10px;
-      background: #f6f7fb;
-      border: 1px solid #ececf3;
-      border-radius: 10px;
       margin-top: 10px;
-      white-space: pre-wrap;
-    }
-
-    @media (max-width: 900px) {
-      .wrap { grid-template-columns: 1fr; }
-      model-viewer, .panel { height: auto; min-height: 420px; }
+      font-size: 14px;
+      color: #333;
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>model-viewer: Модель робота</h1>
-    <p>Отображение модели робота без анимаций, с возможностью включать эффекты post-processing.</p>
-  </header>
 
-  <div class="wrap">
-    <!-- VIEWER -->
-    <model-viewer
-      id="mv"
-      src="robot.glb" <!-- Убедитесь, что файл robot.glb находится в той же папке, что и index.html -->
-      alt="3D модель робота"
-      camera-controls
-      autoplay="false"
-      exposure="1.0"
-      shadow-intensity="0.8"
-      environment-image="neutral"
-      tone-mapping="neutral"
-      loading="eager"
-    >
-      <!-- PostProcessing pipeline -->
-      <effect-composer id="composer" render-mode="performance">
-        <smaa-effect id="fx_smaa" blend-mode="skip"></smaa-effect>
+  <h1>Model Viewer: Модель робота</h1>
+  <p>Модель робота без анимаций с возможностью включить эффект SMAA.</p>
 
-        <bloom-effect
-          id="fx_bloom"
-          blend-mode="skip"
-          intensity="1.2"
-          radius="0.4"
-          threshold="0.85"
-        ></bloom-effect>
+  <!-- Model Viewer -->
+  <model-viewer
+    id="mv"
+    src="robot.glb"  <!-- Убедитесь, что файл robot.glb находится в той же папке, что и index.html -->
+    alt="3D модель робота"
+    camera-controls
+    autoplay="false"
+    exposure="1.0"
+    shadow-intensity="0.8"
+    environment-image="neutral"
+    tone-mapping="neutral"
+    loading="eager"
+  >
+  </model-viewer>
 
-        <ssao-effect
-          id="fx_ssao"
-          blend-mode="skip"
-          intensity="8"
-          radius="0.15"
-        ></ssao-effect>
+  <!-- Кнопка для включения SMAA -->
+  <button id="toggleEffect">Включить SMAA</button>
 
-        <outline-effect
-          id="fx_outline"
-          blend-mode="skip"
-          strength="3"
-        ></outline-effect>
+  <p class="status" id="status">Эффект SMAA: Выключен</p>
 
-        <glitch-effect
-          id="fx_glitch"
-          blend-mode="skip"
-        ></glitch-effect>
+  <script>
+    const modelViewer = document.getElementById('mv');
+    const toggleEffectButton = document.getElementById('toggleEffect');
+    const statusText = document.getElementById('status');
 
-        <pixelate-effect
-          id="fx_pixel"
-          blend-mode="skip"
-          granularity="6"
-        ></pixelate-effect>
+    let effectEnabled = false;
 
-        <color-grade-effect
-          id="fx_grade"
-          blend-mode="skip"
-          tonemapping="aces_filmic"
-          exposure="0"
-          contrast="0"
-          saturation="0"
-        ></color-grade-effect>
-      </effect-composer>
-    </model-viewer>
-
-    <!-- CONTROL PANEL -->
-    <div class="panel">
-      <div class="group">
-        <h2>1) Post-Processing эффекты (вкл/выкл)</h2>
-        <div class="row">
-          <button data-fx="fx_smaa">SMAA</button>
-          <button data-fx="fx_bloom">Bloom</button>
-          <button data-fx="fx_ssao">SSAO</button>
-          <button data-fx="fx_outline">Outline</button>
-          <button data-fx="fx_glitch">Glitch</button>
-          <button data-fx="fx_pixel">Pixelate</button>
-          <button data-fx="fx_grade">Color Grade</button>
-        </div>
-      </div>
-
-      <div class="group">
-        <h2>2) Быстрые пресеты (комбинированные эффекты)</h2>
-        <div class="row">
-          <button id="presetClean">Clean (SMAA)</button>
-          <button id="presetCinematic">Cinematic (Bloom + Grade + SMAA)</button>
-          <button id="presetAO">AO (SSAO + SMAA)</button>
-          <button id="presetCrazy">Crazy (Glitch + Pixelate + Outline)</button>
-          <button id="presetOff">All OFF</button>
-        </div>
-      </div>
-
-      <div class="status" id="status">Статус: загрузка…</div>
-    </div>
-  </div>
-
-  <script type="module">
-    const mv = document.getElementById('mv');
-    const composer = document.getElementById('composer');
-    const statusEl = document.getElementById('status');
-
-    const btnStop = document.getElementById('btnStop');
-
-    function setStatus(text) {
-      statusEl.textContent = text;
-    }
-
-    function isFxEnabled(fxEl) {
-      return fxEl && fxEl.getAttribute('blend-mode') !== 'skip';
-    }
-
-    function setFxEnabled(fxEl, enabled) {
-      if (!fxEl) return;
-      if (enabled) fxEl.removeAttribute('blend-mode'); // default (включено)
-      else fxEl.setAttribute('blend-mode', 'skip');    // выключено
-      if (composer?.queueRender) composer.queueRender();
-    }
-
-    function toggleFxById(id, btn) {
-      const fx = document.getElementById(id);
-      const enabled = !isFxEnabled(fx);
-      setFxEnabled(fx, enabled);
-      if (btn) btn.classList.toggle('on', enabled);
-      refreshStatus();
-    }
-
-    function setAllFxOff() {
-      ['fx_smaa','fx_bloom','fx_ssao','fx_outline','fx_glitch','fx_pixel','fx_grade']
-        .forEach(id => setFxEnabled(document.getElementById(id), false));
-
-      document.querySelectorAll('button[data-fx]').forEach(b => b.classList.remove('on'));
-      refreshStatus();
-    }
-
-    function refreshFxButtonsUI() {
-      document.querySelectorAll('button[data-fx]').forEach(btn => {
-        const id = btn.dataset.fx;
-        const fx = document.getElementById(id);
-        btn.classList.toggle('on', isFxEnabled(fx));
-      });
-    }
-
-    function refreshStatus() {
-      const fxState = (id, label) => {
-        const fx = document.getElementById(id);
-        return `${label}: ${isFxEnabled(fx) ? 'ON' : 'OFF'}`;
-      };
-
-      setStatus(
-`Эффекты:
-- ${fxState('fx_smaa','SMAA')}
-- ${fxState('fx_bloom','Bloom')}
-- ${fxState('fx_ssao','SSAO')}
-- ${fxState('fx_outline','Outline')}
-- ${fxState('fx_glitch','Glitch')}
-- ${fxState('fx_pixel','Pixelate')}
-- ${fxState('fx_grade','ColorGrade')}`
-      );
-    }
-
-    document.querySelectorAll('button[data-fx]').forEach(btn => {
-      btn.addEventListener('click', () => toggleFxById(btn.dataset.fx, btn));
+    toggleEffectButton.addEventListener('click', () => {
+      if (effectEnabled) {
+        modelViewer.removeAttribute('smaa');
+        statusText.textContent = 'Эффект SMAA: Выключен';
+        toggleEffectButton.textContent = 'Включить SMAA';
+      } else {
+        modelViewer.setAttribute('smaa', 'enabled');
+        statusText.textContent = 'Эффект SMAA: Включен';
+        toggleEffectButton.textContent = 'Выключить SMAA';
+      }
+      effectEnabled = !effectEnabled;
     });
-
-    document.getElementById('presetOff').addEventListener('click', () => setAllFxOff());
-
-    document.getElementById('presetClean').addEventListener('click', () => {
-      setAllFxOff();
-      setFxEnabled(document.getElementById('fx_smaa'), true);
-      refreshFxButtonsUI();
-      refreshStatus();
-    });
-
-    document.getElementById('presetCinematic').addEventListener('click', () => {
-      setAllFxOff();
-      setFxEnabled(document.getElementById('fx_smaa'), true);
-      setFxEnabled(document.getElementById('fx_bloom'), true);
-      setFxEnabled(document.getElementById('fx_grade'), true);
-      refreshFxButtonsUI();
-      refreshStatus();
-    });
-
-    document.getElementById('presetAO').addEventListener('click', () => {
-      setAllFxOff();
-      setFxEnabled(document.getElementById('fx_smaa'), true);
-      setFxEnabled(document.getElementById('fx_ssao'), true);
-      refreshFxButtonsUI();
-      refreshStatus();
-    });
-
-    document.getElementById('presetCrazy').addEventListener('click', () => {
-      setAllFxOff();
-      setFxEnabled(document.getElementById('fx_outline'), true);
-      setFxEnabled(document.getElementById('fx_glitch'), true);
-      setFxEnabled(document.getElementById('fx_pixel'), true);
-      refreshFxButtonsUI();
-      refreshStatus();
-    });
-
-    mv.addEventListener('load', () => {
-      refreshFxButtonsUI();
-      refreshStatus();
-    });
-
-    setStatus('Статус: откройте страницу, дождитесь загрузки модели…');
   </script>
+
 </body>
 </html>
